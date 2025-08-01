@@ -86,7 +86,26 @@ def train():
     return model
 
 # ----------------------------
-# Run Training
+# Plotting the result
+# ----------------------------
+def plot_solution(model):
+    model.eval()
+    x_plot = torch.linspace(-1, 1, 256).view(-1, 1)
+    t_plot = torch.ones_like(x_plot) * 1.0  # Final time step (t = 1)
+    u_pred = model(t_plot, x_plot).detach().numpy()
+
+    plt.figure(figsize=(8, 4))
+    plt.plot(x_plot.numpy(), u_pred, label='Predicted u(x,1)', color='blue')
+    plt.xlabel('x')
+    plt.ylabel('u')
+    plt.title('Burgers Equation Solution at t=1 using PINN')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# ----------------------------
+# Run Training and Plotting
 # ----------------------------
 if __name__ == "__main__":
     trained_model = train()
+    plot_solution(trained_model)
