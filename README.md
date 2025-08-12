@@ -10,20 +10,41 @@ PINNs are neural networks that are trained to solve supervised learning tasks wh
 
 
 Key Mechanisms and Components
+
 1. Universal Function Approximation: PINNs employ deep neural networks as universal function approximators to directly tackle nonlinear problems, avoiding the need for prior assumptions, linearization, or local time-stepping.
+
 2. Automatic Differentiation (Autograd): This is a crucial component. PINNs exploit automatic differentiation (like PyTorch's autograd [Conversation History, 83]) to differentiate the neural networks with respect to their input coordinates (e.g., space and time) and model parameters. This allows for the direct computation of terms like ut (time derivative) or uxx (second spatial derivative) from the neural network's output, which are then used to form the physics-informed residual.
+
 3. Physics-Informed Neural Network (Residual Network):
     ◦ If u(t, x) is approximated by a deep neural network, then a "physics-informed neural network," f(t, x), is defined as the left-hand side of the PDE (e.g., f := ut + N[u]).
     ◦ This f(t, x) network is derived by applying the chain rule using automatic differentiation. It shares the same parameters as the network representing u(t, x), but may have different activation functions due to the action of the differential operator.
+
 4. Custom Loss Functions:
     ◦ The learning process involves minimizing a mean squared error (MSE) loss function.
     ◦ This loss typically comprises multiple terms:
         ▪ MSEu (or SSEn for discrete models) enforces adherence to initial and boundary training data on u(t, x).
         ▪ MSEf (or SSEb/SSEn+1 for discrete models) enforces the structure imposed by the PDE at a finite set of collocation points.
     ◦ This "custom" construction of activation and loss functions is a key distinguishing feature of PINNs from other machine learning applications in computational physics that treat models as black boxes.
+
 5. Regularization: The inclusion of the PDE-enforcing MSEf term in the loss function acts as a regularization mechanism. This allows PINNs to be effectively trained with small datasets, enhancing robustness and generalization, which is crucial in scientific fields where data acquisition is expensive.
 6. Activation Functions: Common deep feed-forward neural network architectures in PINNs use hyperbolic tangent (tanh) activation functions. Tanh is a non-linear and differentiable function.
 <img width="1415" height="545" alt="image" src="https://github.com/user-attachments/assets/c4e54512-ee8c-4910-a02b-4dbdfaf6f78b" />
+
+Types of PINN Algorithms
+
+The research paper distinguishes between two main types of algorithms:
+
+1. Continuous Time Models:
+    ◦ These models define f(t, x) directly from the PDE's left-hand side and approximate u(t, x) with a neural network.
+    ◦ They require a set of collocation points (Nf) throughout the spatio-temporal domain to enforce the physical constraints.
+    ◦ Limitation: A potential bottleneck arises in higher-dimensional problems due to the exponential increase in the number of collocation points needed.
+    ◦ Optimization: For small datasets, L-BFGS (a quasi-Newton, full-batch gradient-based algorithm) is used, while for larger datasets, mini-batch settings with stochastic gradient descent (SGD) and its modern variants are readily employed.
+   
+3. Discrete Time Models:
+    ◦ These models leverage classical Runge-Kutta time-stepping schemes.
+    ◦ They circumvent the need for collocation points.
+    ◦ A key advantage is their ability to employ implicit Runge-Kutta schemes with an arbitrarily large number of stages (q) and take very large time steps, while retaining numerical stability and high predictive accuracy, allowing the resolution of the entire spatio-temporal solution in a single step. This property is described as unprecedented for an algorithm with such implementation simplicity.
+    ◦ The loss function often involves a sum of squared errors (SSE) based on data at distinct time snapshots
 
 <img width="1696" height="406" alt="image" src="https://github.com/user-attachments/assets/23a61cab-0bb3-4bee-a6c4-c0c52040c3e5" />
 
