@@ -5,7 +5,8 @@ Core Concept and Purpose
 PINNs are neural networks that are trained to solve supervised learning tasks while simultaneously respecting given laws of physics. They aim to provide data-driven solutions and discoveries of PDEs. This approach is particularly valuable in scenarios where data acquisition is costly or information is partial (referred to as the "small data regime"), as traditional state-of-the-art machine learning techniques often lack robustness and convergence guarantees in such situations. By incorporating prior physical knowledge, PINNs act as a regularization agent, constraining the space of admissible solutions and amplifying the information content of the available data, allowing them to generalize well even with limited training examples.
 <img width="848" height="259" alt="image" src="https://github.com/user-attachments/assets/61dbe875-9b7d-43b3-92d1-61a7fda37d32" />
 
-<img width="828" height="658" alt="image" src="https://github.com/user-attachments/assets/1ff30122-6b4a-46cf-aa3a-595ca285f5cb" />
+![Uploading image.png…]()
+
 
 Key Mechanisms and Components
 1. Universal Function Approximation: PINNs employ deep neural networks as universal function approximators to directly tackle nonlinear problems, avoiding the need for prior assumptions, linearization, or local time-stepping.
