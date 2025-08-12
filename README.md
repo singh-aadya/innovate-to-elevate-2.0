@@ -1,5 +1,3 @@
-<img width="828" height="658" alt="image" src="https://github.com/user-attachments/assets/2fcbc44d-3049-45fe-8e6c-72d388faf1e4" /># innovate-to-elevate-2.0
-
 Physics-Informed Neural Networks (PINNs) represent a novel deep learning framework designed to address scientific computing problems by integrating neural networks with the governing physical laws, typically expressed as nonlinear partial differential equations (PDEs),
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/dcc6eacf-5a38-4a07-a37d-351c1eb8e77e" />
 
