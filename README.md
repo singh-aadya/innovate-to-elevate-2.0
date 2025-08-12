@@ -52,6 +52,24 @@ The research paper distinguishes between two main types of algorithms:
 
 <img width="915" height="306" alt="image" src="https://github.com/user-attachments/assets/17721898-0c86-4bf4-868b-351d58af2a58" />
 
+Applications and Demonstrated Effectiveness
+
+PINNs have been demonstrated on a collection of classical problems in various fields:
+
+• Quantum Mechanics: Solving the nonlinear Schrodinger equation, handling periodic boundary conditions and complex-valued solutions.
+
+• Reaction-Diffusion Systems: Solving the Allen-Cahn equation, highlighting the ability to handle different types of nonlinearity.
+
+• Fluid Dynamics: Solving the Navier-Stokes equations to identify unknown parameters (e.g., λ1, λ2) and reconstruct the pressure field from scattered velocity data, even with noise. The ability to infer continuous quantities like pressure without direct training data is noted as a significant enhanced capability.
+
+• Shallow-Water Waves: Solving the Korteweg-de Vries (KdV) equation, which involves higher-order derivatives and complex nonlinear dynamics, demonstrating accurate parameter identification even with large temporal gaps between data snapshots and noise.
+
+• Burgers' Equation: Used as a canonical example for systematic studies, demonstrating high predictive accuracy and robustness to noise in both continuous and discrete time models.
+Across these applications, PINNs have shown:
+• High prediction accuracy, often outperforming previous methods like Gaussian processes for PDE solutions.
+• Robustness to noise in training data.
+• The capacity to learn from scattered and scarce training data.
+
 <img width="1050" height="337" alt="image" src="https://github.com/user-attachments/assets/604c8b18-84cf-4dc0-8ec7-d44fe5ca2f11" />
 
 <img width="708" height="542" alt="image" src="https://github.com/user-attachments/assets/ae40b32d-286b-40b7-9dd8-0ad5b5d2f819" />
