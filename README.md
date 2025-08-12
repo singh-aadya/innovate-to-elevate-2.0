@@ -1,94 +1,111 @@
-Physics-Informed Neural Networks (PINNs) represent a novel deep learning framework designed to address scientific computing problems by integrating neural networks with the governing physical laws, typically expressed as nonlinear partial differential equations (PDEs),
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/dcc6eacf-5a38-4a07-a37d-351c1eb8e77e" />
 
-Core Concept and Purpose
-PINNs are neural networks that are trained to solve supervised learning tasks while simultaneously respecting given laws of physics. They aim to provide data-driven solutions and discoveries of PDEs. This approach is particularly valuable in scenarios where data acquisition is costly or information is partial (referred to as the "small data regime"), as traditional state-of-the-art machine learning techniques often lack robustness and convergence guarantees in such situations. By incorporating prior physical knowledge, PINNs act as a regularization agent, constraining the space of admissible solutions and amplifying the information content of the available data, allowing them to generalize well even with limited training examples.
+# Physics-Informed Neural Networks (PINNs)
+
+Physics-Informed Neural Networks (PINNs) are a **deep learning framework** designed to solve scientific computing problems by combining neural networks with **governing physical laws**, typically expressed as nonlinear partial differential equations (PDEs).
+
+---
+
+## **Core Concept and Purpose**
+
+PINNs are trained to solve supervised learning tasks while **respecting physical laws**.  
+They are particularly effective in the **small data regime**, where data acquisition is costly or incomplete.
+
 <img width="848" height="259" alt="image" src="https://github.com/user-attachments/assets/61dbe875-9b7d-43b3-92d1-61a7fda37d32" />
 
 
+
+
+**Why PINNs?**
+- Traditional ML lacks robustness and convergence guarantees in physics-based scenarios.
+- Incorporating **prior physical knowledge** acts as a **regularization mechanism**, constraining possible solutions and improving generalization.
+
+
+
+---
 <img width="828" height="658" alt="image" src="https://github.com/user-attachments/assets/8c1544bd-0ddc-4dd9-a8fb-6391343e57d2" />
 
+## **Key Mechanisms and Components**
 
-Key Mechanisms and Components
+1. **Universal Function Approximation**  
+   - Use deep neural networks to approximate nonlinear functions **without prior assumptions** or discretization.
 
-1. Universal Function Approximation: PINNs employ deep neural networks as universal function approximators to directly tackle nonlinear problems, avoiding the need for prior assumptions, linearization, or local time-stepping.
+2. **Automatic Differentiation (Autograd)**  
+   - Frameworks like PyTorch/TensorFlow allow direct computation of derivatives (e.g., u_t, u_xx) from network outputs.
+   - Enables formulation of the **physics-informed residual**.
 
-2. Automatic Differentiation (Autograd): This is a crucial component. PINNs exploit automatic differentiation (like PyTorch's autograd [Conversation History, 83]) to differentiate the neural networks with respect to their input coordinates (e.g., space and time) and model parameters. This allows for the direct computation of terms like ut (time derivative) or uxx (second spatial derivative) from the neural network's output, which are then used to form the physics-informed residual.
+3. **Physics-Informed Residual Network**  
+   - Let u(t, x) be the neural network approximation.  
+   - Define f(t, x) as the **PDE residual** (e.g., f = u_t + N[u]).  
+   - Computed via **chain rule** using autograd.
 
-3. Physics-Informed Neural Network (Residual Network):
-    ◦ If u(t, x) is approximated by a deep neural network, then a "physics-informed neural network," f(t, x), is defined as the left-hand side of the PDE (e.g., f := ut + N[u]).
-    ◦ This f(t, x) network is derived by applying the chain rule using automatic differentiation. It shares the same parameters as the network representing u(t, x), but may have different activation functions due to the action of the differential operator.
+4. **Custom Loss Functions**  
+   - **MSE_u**: Enforces agreement with initial/boundary data.  
+   - **MSE_f**: Enforces PDE constraints at collocation points.  
+   - Loss = MSE_u + MSE_f.
 
-4. Custom Loss Functions:
-    ◦ The learning process involves minimizing a mean squared error (MSE) loss function.
-    ◦ This loss typically comprises multiple terms:
-        ▪ MSEu (or SSEn for discrete models) enforces adherence to initial and boundary training data on u(t, x).
-        ▪ MSEf (or SSEb/SSEn+1 for discrete models) enforces the structure imposed by the PDE at a finite set of collocation points.
-    ◦ This "custom" construction of activation and loss functions is a key distinguishing feature of PINNs from other machine learning applications in computational physics that treat models as black boxes.
+5. **Regularization Effect**  
+   - PDE term in loss improves generalization even with **small datasets**.
 
-5. Regularization: The inclusion of the PDE-enforcing MSEf term in the loss function acts as a regularization mechanism. This allows PINNs to be effectively trained with small datasets, enhancing robustness and generalization, which is crucial in scientific fields where data acquisition is expensive.
-6. Activation Functions: Common deep feed-forward neural network architectures in PINNs use hyperbolic tangent (tanh) activation functions. Tanh is a non-linear and differentiable function.
+6. **Activation Functions**  
+   - Common: **tanh** (smooth, differentiable, effective for PDEs).
+
+---
 <img width="1415" height="545" alt="image" src="https://github.com/user-attachments/assets/c4e54512-ee8c-4910-a02b-4dbdfaf6f78b" />
 
-Types of PINN Algorithms
+## **Types of PINN Algorithms**
 
-The research paper distinguishes between two main types of algorithms:
+### 1. Continuous Time Models
+- Define residual f(t, x) from PDE's LHS.  
+- Require **collocation points** in the spatio-temporal domain.  
+- **Optimization**:  
+  - Small datasets → **L-BFGS** (full-batch quasi-Newton).  
+  - Large datasets → **SGD/Adam** (mini-batch).  
+- **Limitation**: Scaling to high dimensions requires exponentially more collocation points.
 
-1. Continuous Time Models:
-    ◦ These models define f(t, x) directly from the PDE's left-hand side and approximate u(t, x) with a neural network.
-    ◦ They require a set of collocation points (Nf) throughout the spatio-temporal domain to enforce the physical constraints.
-    ◦ Limitation: A potential bottleneck arises in higher-dimensional problems due to the exponential increase in the number of collocation points needed.
-    ◦ Optimization: For small datasets, L-BFGS (a quasi-Newton, full-batch gradient-based algorithm) is used, while for larger datasets, mini-batch settings with stochastic gradient descent (SGD) and its modern variants are readily employed.
-   
-3. Discrete Time Models:
-    ◦ These models leverage classical Runge-Kutta time-stepping schemes.
-    ◦ They circumvent the need for collocation points.
-    ◦ A key advantage is their ability to employ implicit Runge-Kutta schemes with an arbitrarily large number of stages (q) and take very large time steps, while retaining numerical stability and high predictive accuracy, allowing the resolution of the entire spatio-temporal solution in a single step. This property is described as unprecedented for an algorithm with such implementation simplicity.
-    ◦ The loss function often involves a sum of squared errors (SSE) based on data at distinct time snapshots
+### 2. Discrete Time Models
+- Use **Runge-Kutta** time-stepping (explicit/implicit).  
+- Avoid collocation points.  
+- Can take **large time steps** with high stability and accuracy.  
+- Solve **entire spatio-temporal solution in one step**.  
+- Loss: Sum of squared errors (SSE) over time snapshots.
 
+---
 <img width="1696" height="406" alt="image" src="https://github.com/user-attachments/assets/23a61cab-0bb3-4bee-a6c4-c0c52040c3e5" />
 
 <img width="768" height="223" alt="image" src="https://github.com/user-attachments/assets/37cb3d48-5cde-4a75-99fe-b502b491da6a" />
 
 <img width="915" height="306" alt="image" src="https://github.com/user-attachments/assets/17721898-0c86-4bf4-868b-351d58af2a58" />
 
-Applications and Demonstrated Effectiveness
+## **Applications**
 
-PINNs have been demonstrated on a collection of classical problems in various fields:
+- **Quantum Mechanics**: Nonlinear Schrödinger equation (periodic BCs, complex-valued solutions).  
+- **Reaction-Diffusion Systems**: Allen-Cahn equation (nonlinearities).  
+- **Fluid Dynamics**: Navier–Stokes (parameter identification, pressure reconstruction).  
+- **Shallow-Water Waves**: Korteweg–de Vries (parameter estimation, sparse temporal data).  
+- **Burgers’ Equation**: Benchmark problem (accuracy, noise robustness).
 
-• Quantum Mechanics: Solving the nonlinear Schrodinger equation, handling periodic boundary conditions and complex-valued solutions.
+**Advantages Across Applications**:
+- High predictive accuracy.
+- Robust to noisy/scattered data.
+- Outperforms Gaussian processes for PDE solutions.
 
-• Reaction-Diffusion Systems: Solving the Allen-Cahn equation, highlighting the ability to handle different types of nonlinearity.
-
-• Fluid Dynamics: Solving the Navier-Stokes equations to identify unknown parameters (e.g., λ1, λ2) and reconstruct the pressure field from scattered velocity data, even with noise. The ability to infer continuous quantities like pressure without direct training data is noted as a significant enhanced capability.
-
-• Shallow-Water Waves: Solving the Korteweg-de Vries (KdV) equation, which involves higher-order derivatives and complex nonlinear dynamics, demonstrating accurate parameter identification even with large temporal gaps between data snapshots and noise.
-
-• Burgers' Equation: Used as a canonical example for systematic studies, demonstrating high predictive accuracy and robustness to noise in both continuous and discrete time models.
-Across these applications, PINNs have shown:
-• High prediction accuracy, often outperforming previous methods like Gaussian processes for PDE solutions.
-• Robustness to noise in training data.
-• The capacity to learn from scattered and scarce training data.
-
+---
 <img width="1050" height="337" alt="image" src="https://github.com/user-attachments/assets/604c8b18-84cf-4dc0-8ec7-d44fe5ca2f11" />
 
 <img width="708" height="542" alt="image" src="https://github.com/user-attachments/assets/ae40b32d-286b-40b7-9dd8-0ad5b5d2f819" />
 
-Open Questions and Future Research
+## **Open Questions & Future Research**
 
-Despite promising results, the development of PINNs raises several open questions for future research:
+- **Architecture**: Optimal depth/width for different PDE types?  
+- **Data Needs**: Minimum data for stable training?  
+- **Optimization**: Why unique parameter convergence?  
+- **Vanishing Gradients**: Can activation functions be improved?  
+- **Initialization & Normalization**: Better schemes for stability?  
+- **Loss Functions**: Beyond MSE/SSE?  
+- **Uncertainty Quantification**: How to measure prediction confidence?
 
-• Optimal neural network architecture: How deep or wide should the network be?
-• Data requirements: How much data is truly needed for effective training?
-• Optimization landscape: Why does the algorithm converge to unique values for differential operator parameters, and why is it not suffering from local optima?
-• Vanishing gradients: Could different activation functions mitigate vanishing gradients in deeper architectures or with higher-order differential operators?
-• Initialization and Normalization: Can network weights initialization or data normalization be further improved?
-• Loss functions: Are mean squared error and sum of squared errors the most appropriate loss functions for all cases?
-• Uncertainty Quantification: How can the uncertainty associated with predictions be quantified?
-The authors emphasize that PINNs should not be viewed as replacements for classical numerical methods (e.g., finite elements, spectral methods), which have matured over decades. Instead, they advocate for a fruitful synergy where classical methods and deep neural networks coexist, offering invaluable intuition and simplifying rapid development of new ideas in data-driven scientific computing
+---
 
-
-
-
-
-
+**Note**:  
+PINNs are **not** replacements for classical numerical methods (e.g., FEM, spectral methods).  
+They are **complementary**, offering synergy between **data-driven learning** and **classical solvers**.
