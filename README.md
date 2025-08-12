@@ -74,6 +74,19 @@ Across these applications, PINNs have shown:
 
 <img width="708" height="542" alt="image" src="https://github.com/user-attachments/assets/ae40b32d-286b-40b7-9dd8-0ad5b5d2f819" />
 
+Open Questions and Future Research
+
+Despite promising results, the development of PINNs raises several open questions for future research:
+
+• Optimal neural network architecture: How deep or wide should the network be?
+• Data requirements: How much data is truly needed for effective training?
+• Optimization landscape: Why does the algorithm converge to unique values for differential operator parameters, and why is it not suffering from local optima?
+• Vanishing gradients: Could different activation functions mitigate vanishing gradients in deeper architectures or with higher-order differential operators?
+• Initialization and Normalization: Can network weights initialization or data normalization be further improved?
+• Loss functions: Are mean squared error and sum of squared errors the most appropriate loss functions for all cases?
+• Uncertainty Quantification: How can the uncertainty associated with predictions be quantified?
+The authors emphasize that PINNs should not be viewed as replacements for classical numerical methods (e.g., finite elements, spectral methods), which have matured over decades. Instead, they advocate for a fruitful synergy where classical methods and deep neural networks coexist, offering invaluable intuition and simplifying rapid development of new ideas in data-driven scientific computing
+
 
 
 
